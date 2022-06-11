@@ -2,11 +2,10 @@ const express = require('express');
 
 const router = express.Router();
 
-const { PDFDocument, StandardFonts } = require('pdf-lib')
-const fontkit = require('@pdf-lib/fontkit')
-
 const fs = require('fs')
 const util = require('util')
+const { PDFDocument, StandardFonts } = require('pdf-lib')
+const fontkit = require('@pdf-lib/fontkit')
 
 const PATH_ASSETS = "assets"
 const PATH_FONTS = PATH_ASSETS + "/fonts"
