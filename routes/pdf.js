@@ -3,6 +3,8 @@ const express = require('express');
 const router = express.Router();
 
 const { PDFDocument, StandardFonts } = require('pdf-lib')
+const fontkit = require('@pdf-lib/fontkit')
+
 const fs = require('fs')
 const util = require('util')
 
@@ -30,12 +32,18 @@ async function createPdf(input, output) {
   }
   const file = await getStuff()
   const pdfDoc = await PDFDocument.load(file)
+  pdfDoc.registerFontkit(fontkit)
+
   const form = pdfDoc.getForm()
-  const font = await pdfDoc.embedFont(StandardFonts.TimesRomanBold)
+  // TODO: Find a different font for here. Find a few that look like they are hand written.
+  const fontBytes = fs.readFileSync('assets/fonts/AlexBrush-Regular.ttf');
+
+  const font = await pdfDoc.embedFont(fontBytes)
+  
   Object.keys(data).forEach((element) => {
     const field = form.getTextField(element)
     field.setText(data[element])
-    if (element == "SIGNATURE") {
+    if (element == "SIGNATURE" && font !== undefined) {
       field.defaultUpdateAppearances(font)
     }
   });
