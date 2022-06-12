@@ -2,29 +2,42 @@ const express = require('express');
 
 const router = express.Router();
 
-const fs = require('fs')
-const util = require('util')
-const { PDFDocument, StandardFonts } = require('pdf-lib')
-const fontkit = require('@pdf-lib/fontkit')
+const fs = require('fs');
+const util = require('util');
+const { PDFDocument } = require('pdf-lib');
+const fontkit = require('@pdf-lib/fontkit');
+const nodemailer = require ('nodemailer');
 
-const PATH_ASSETS = "assets"
-const PATH_FONTS = PATH_ASSETS + "/fonts"
+const PATH_ASSETS = "assets";
+const PATH_FONTS = PATH_ASSETS + "/fonts";
 
+const PDF_KEY_DURATION_DATE_FROM = "duration_date_from";
+const PDF_KEY_DURATION_DATE_TO = "duration_date_to";
 const PDF_KEY_NAME_PRINTED = "name_printed";
 const PDF_KEY_NAME_SIGNATURE = "name_signature";
 
 router.post('/set', function(req, res, next) {
-  const augmentedData = augmentData(req.body);
-  const pdfToAugmentPath = PATH_ASSETS + "/153_keats_lane_raw.pdf"
-  const finalizedPdfPath = PATH_ASSETS + "/153_keats_lane_completed.pdf"
+  const body = req.body
+  const augmentedData = augmentData(body);
+  const finalizedPdfName = "153_keats_lane_completed.pdf";
+  const pdfToAugmentPath = PATH_ASSETS + "/153_keats_lane_raw.pdf";
+  const finalizedPdfPath = PATH_ASSETS + "/" + finalizedPdfName;
+  const fromDate = body[PDF_KEY_DURATION_DATE_FROM]
+  const toDate = body[PDF_KEY_DURATION_DATE_TO]
 
   const pdfAugmented = augmentPDF(pdfToAugmentPath, finalizedPdfPath, augmentedData);
   pdfAugmented.then(() => {
-    res.statusCode = 204
-    res.send()
+    const pdfEmailed = sendEmailWithAttachment(finalizedPdfName, finalizedPdfPath, fromDate, toDate);
+    pdfEmailed.then( (response) => {
+      res.statusCode = 204;
+      res.send();
+    }, (error) => {
+      res.statusCode = 501;
+      res.send(error);
+    });
   }, (error) => {
-    res.statusCode = 500
-    res.send(error)
+    res.statusCode = 500;
+    res.send(error);
   });
 });
 
@@ -58,47 +71,47 @@ router.post('/set', function(req, res, next) {
   }
 */
 function augmentData(dataToAugment) {
-  var augmentedData = dataToAugment
-  augmentedData[PDF_KEY_NAME_SIGNATURE] = augmentedData[PDF_KEY_NAME_PRINTED]
+  var augmentedData = dataToAugment;
+  augmentedData[PDF_KEY_NAME_SIGNATURE] = augmentedData[PDF_KEY_NAME_PRINTED];
 
-  return augmentedData
+  return augmentedData;
 }
 
 async function augmentPDF(pdfToAugmentPath, finalizedPdfPath, data) {
-  const readFile = util.promisify(fs.readFile)
-  const file = await readFile(pdfToAugmentPath)
-  const pdfDoc = await PDFDocument.load(file)
+  const readFile = util.promisify(fs.readFile);
+  const file = await readFile(pdfToAugmentPath);
+  const pdfDoc = await PDFDocument.load(file);
 
   // Set the custom fonts.
-  const form = pdfDoc.getForm()
+  const form = pdfDoc.getForm();
 
   const fontBytes = fs.readFileSync(PATH_FONTS + "/" + getRandomFont());
 
-  pdfDoc.registerFontkit(fontkit)
+  pdfDoc.registerFontkit(fontkit);
 
-  const font = await pdfDoc.embedFont(fontBytes)
+  const font = await pdfDoc.embedFont(fontBytes);
   
   // Populate the PDF inputs.
   Object.keys(data).forEach((element) => {
-    const field = form.getTextField(element)
-    field.setText(data[element])
+    const field = form.getTextField(element);
+    field.setText(data[element]);
 
     if (element == PDF_KEY_NAME_SIGNATURE && font !== undefined) {
-      field.defaultUpdateAppearances(font)
+      field.defaultUpdateAppearances(font);
     }
   });
 
   // Save the PDF to a byte array.
-  const pdfBytes = await pdfDoc.save()
+  const pdfBytes = await pdfDoc.save();
 
   // Write to the PDF.
   return new Promise((resolve, reject) => {
     fs.writeFile(finalizedPdfPath, pdfBytes, (error) => {
       if (error) {
-        reject()
+        reject();
       }
 
-      resolve()
+      resolve();
     });
   });
 }
@@ -112,12 +125,60 @@ function getRandomFont() {
     "DawningofaNewDay.ttf"
   ]
 
-  const fontIndex = getRandomNumber(fontNames.length)
+  const fontIndex = getRandomNumber(fontNames.length);
   return fontNames[fontIndex];
 }
 
 function getRandomNumber(max) {
-  return Math.floor(Math.random() * max)
+  return Math.floor(Math.random() * max);
+}
+
+async function sendEmailWithAttachment(attachmentName, attachmentLocation, fromDate, toDate) {
+  console.log("attachmentName: ", attachmentName);
+  console.log("attachmentLocation: ", attachmentLocation);
+
+  const transporter = nodemailer.createTransport({
+    host: 'smtp.gmail.com',
+    port: 587,
+    secure: false,
+    requireTLS: true,
+    auth: {
+      user: 'keatslanerental@gmail.com',
+      // Documentation: https://stackoverflow.com/questions/72530276/nodemailergoogle-disabled-the-less-secure-app-option-on-google-accounts-i-woul
+      pass: 'qwzqgrodhhwmnmsv'
+    }
+  });
+
+  console.log("transporter: ", transporter);
+
+  
+  const mailOptions = {
+    from: 'keatslanerental@gmail.com',
+    to: 'nick.piscopio@gmail.com, sarah.piscopio@gmail.com',
+    subject: '153 Keats Lane Rental: ' + fromDate + '–' + toDate,
+    text: 'Attached is the filled out Short Term Rental form for 153 Keats Lane for ' + fromDate + ' to ' + toDate,
+    attachments: [{
+      filename: attachmentName,
+      path: attachmentLocation,
+      contentType: 'application/pdf'
+    }]
+  };
+
+  console.log("mailOptions: ", mailOptions);
+
+
+  return new Promise((resolve, reject) => {
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.log("error: ", error);
+        reject(error);
+      }
+  
+      console.log("info: ", info);
+
+      resolve(info.response);
+    });
+  });
 }
 
 module.exports = router;
