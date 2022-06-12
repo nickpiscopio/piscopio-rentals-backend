@@ -134,9 +134,6 @@ function getRandomNumber(max) {
 }
 
 async function sendEmailWithAttachment(attachmentName, attachmentLocation, fromDate, toDate) {
-  console.log("attachmentName: ", attachmentName);
-  console.log("attachmentLocation: ", attachmentLocation);
-
   const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
     port: 587,
@@ -148,9 +145,6 @@ async function sendEmailWithAttachment(attachmentName, attachmentLocation, fromD
       pass: 'qwzqgrodhhwmnmsv'
     }
   });
-
-  console.log("transporter: ", transporter);
-
   
   const mailOptions = {
     from: 'keatslanerental@gmail.com',
@@ -164,19 +158,13 @@ async function sendEmailWithAttachment(attachmentName, attachmentLocation, fromD
     }]
   };
 
-  console.log("mailOptions: ", mailOptions);
-
-
   return new Promise((resolve, reject) => {
     transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
-        console.log("error: ", error);
         reject(error);
       }
-  
-      console.log("info: ", info);
 
-      resolve(info.response);
+      resolve();
     });
   });
 }
