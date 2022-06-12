@@ -77,6 +77,10 @@ function augmentData(dataToAugment) {
   return augmentedData;
 }
 
+// TODO: Need to either add our real signature as an image or a auto generated one.
+// TODO: Need to add Dottie's info to the sheet as well.
+// TODO: Need to write tests.
+// TODO: Need to break these up into helper classes instead of having them here.
 async function augmentPDF(pdfToAugmentPath, finalizedPdfPath, data) {
   const readFile = util.promisify(fs.readFile);
   const file = await readFile(pdfToAugmentPath);
@@ -140,14 +144,18 @@ async function sendEmailWithAttachment(attachmentName, attachmentLocation, fromD
     secure: false,
     requireTLS: true,
     auth: {
+      // TODO: make this BASE64.
       user: 'keatslanerental@gmail.com',
       // Documentation: https://stackoverflow.com/questions/72530276/nodemailergoogle-disabled-the-less-secure-app-option-on-google-accounts-i-woul
+      // TODO: make this BASE64.
       pass: 'qwzqgrodhhwmnmsv'
     }
   });
   
   const mailOptions = {
+    // TODO: make this BASE64.
     from: 'keatslanerental@gmail.com',
+    // TODO: make this a list of BASE64.
     to: 'nick.piscopio@gmail.com, sarah.piscopio@gmail.com',
     subject: '153 Keats Lane Rental: ' + fromDate + '–' + toDate,
     text: 'Attached is the filled out Short Term Rental form for 153 Keats Lane for ' + fromDate + ' to ' + toDate,
