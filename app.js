@@ -4,7 +4,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
-var pdfRouter = require('./routes/pdf');
+var pdfRouter = require('./src/routes/pdf');
 
 var app = express();
 
