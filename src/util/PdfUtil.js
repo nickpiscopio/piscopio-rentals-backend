@@ -10,33 +10,33 @@ const numberUtil = require("../util/NumberUtil.js")
 
 module.exports = class PdfUtil {
 /* Test Data
-  {
-    "duration_date_from": "1/5/22",
-    "duration_date_to": "2/5/22",
-    "name_printed": "John Ally",
-    "address_street": "123 Address Lane Drive",
-    "address_city": "Bensalem",
-    "address_state": "PA",
-    "address_zipcode": "19020",
-    "phone_number": "2155555555",
-    "phone_number_2": "2675555555",
-    "vehicle_1_plate_state": "PA",
-    "vehicle_1_plate_number": "123",
-    "vehicle_2_plate_state": "NJ",
-    "vehicle_2_plate_number": "456",
-    "vehicle_3_plate_state": "NC",
-    "vehicle_3_plate_number": "789",
-    "vehicle_4_plate_state": "CA",
-    "vehicle_4_plate_number": "357",
-    "vehicle_5_plate_state": "TT",
-    "vehicle_5_plate_number": "1234",
-    "vehicle_6_plate_state": "RF",
-    "vehicle_6_plate_number": "8920",
-    "vehicle_7_plate_state": "PE",
-    "vehicle_7_plate_number": "123456",
-    "vehicle_8_plate_state": "NA",
-    "vehicle_8_plate_number": "g46356"
-  }
+{
+    "durationDateFrom": "1/10/22",
+    "durationDateTo": "2/5/22",
+    "namePrinted": "John A. Ally",
+    "addressStreet": "123 Address Lane Drive",
+    "addressCity": "Bensalem",
+    "addressState": "PA",
+    "addressZipcode": "19020",
+    "phoneNumber": "2155555555",
+    "phoneNumber2": "2675555555",
+    "vehicle1PlateState": "PA",
+    "vehicle1PlateNumber": "123",
+    "vehicle2PlateState": "NJ",
+    "vehicle2PlateNumber": "456",
+    "vehicle3PlateState": "NC",
+    "vehicle3PlateNumber": "789",
+    "vehicle4PlateState": "CA",
+    "vehicle4PlateNumber": "357",
+    "vehicle5PlateState": "TT",
+    "vehicle5PlateNumber": "1234",
+    "vehicle6PlateState": "RF",
+    "vehicle6PlateNumber": "8920",
+    "vehicle7PlateState": "PE",
+    "vehicle7PlateNumber": "123456",
+    "vehicle8PlateState": "NA",
+    "vehicle8PlateNumber": "g46356"
+}
 */
 static augmentData(dataToAugment) {
     var augmentedData = dataToAugment;
