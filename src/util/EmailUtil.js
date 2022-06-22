@@ -22,7 +22,7 @@ module.exports = class EmailUtil {
         
         const mailOptions = {
             from: keatsLaneEmail,
-            to: toEmailsAsStringList,
+            bcc: toEmailsAsStringList,
             subject: '153 Keats Lane Rental: ' + fromDate + '–' + toDate,
             text: 'Attached is the filled out Short Term Rental form for 153 Keats Lane for ' + fromDate + ' to ' + toDate,
             attachments: [{

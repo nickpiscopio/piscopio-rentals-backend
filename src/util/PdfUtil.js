@@ -53,8 +53,6 @@ static augmentData(dataToAugment) {
     augmentedData[pdfKey.PACKET_RETRIEVER] = encoderUtil.decode(property.PACKET_RETRIEVER_HOUSE_CONTACT);
     augmentedData[pdfKey.HOUSE_CONACT] = encoderUtil.decode(property.PACKET_RETRIEVER_HOUSE_CONTACT);
     augmentedData[pdfKey.NAME_SIGNATURE] = augmentedData[pdfKey.NAME_PRINTED];
-
-    console.log("augmentedData: ", augmentedData);
   
     return augmentedData;
   }
