@@ -4,9 +4,11 @@ const util = require("util");
 const { PDFDocument } = require('pdf-lib');
 const fontkit = require('@pdf-lib/fontkit');
 
-const pdfKey = require("../constants/key.js");
-const path = require("../constants/path.js");
-const numberUtil = require("../util/NumberUtil.js")
+const pdfKey = require("../constants/Key.js");
+const path = require("../constants/Path.js");
+const property = require("../constants/Property.js");
+const encoderUtil = require("../util/EncoderUtil.js");
+const numberUtil = require("../util/NumberUtil.js");
 
 module.exports = class PdfUtil {
 /* Test Data
@@ -40,13 +42,23 @@ module.exports = class PdfUtil {
 */
 static augmentData(dataToAugment) {
     var augmentedData = dataToAugment;
+
+    augmentedData[pdfKey.PROPERTY_OWNER] = encoderUtil.decode(property.PROPERTY_OWNER);
+    console.log("encoderUtil.decode(property.PROPERTY_OWNER): ", encoderUtil.decode(property.PROPERTY_OWNER));
+
+    augmentedData[pdfKey.LOT_NUMBER] = encoderUtil.decode(property.LOT_NUMBER);
+    augmentedData[pdfKey.STREET_NUMBER] = encoderUtil.decode(property.STREET_NUMBER);
+    augmentedData[pdfKey.STREET] = encoderUtil.decode(property.STREET);
+    augmentedData[pdfKey.PACKET_RETRIEVER] = encoderUtil.decode(property.PACKET_RETRIEVER_HOUSE_CONTACT);
+    augmentedData[pdfKey.HOUSE_CONACT] = encoderUtil.decode(property.PACKET_RETRIEVER_HOUSE_CONTACT);
     augmentedData[pdfKey.NAME_SIGNATURE] = augmentedData[pdfKey.NAME_PRINTED];
+
+    console.log("augmentedData: ", augmentedData);
   
     return augmentedData;
   }
   
   // TODO: Need to either add our real signature as an image or a auto generated one.
-  // TODO: Need to add Dottie's info to the sheet as well.
   // TODO: Need to write tests.
   static async augmentPDF(pdfToAugmentPath, finalizedPdfPath, data) {
     const readFile = util.promisify(fs.readFile);

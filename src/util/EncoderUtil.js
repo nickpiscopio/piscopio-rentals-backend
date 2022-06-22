@@ -10,6 +10,6 @@ module.exports = class EncoderUtil {
     }
 
     static decode(encodedString) {
-        return Buffer.from(encodedString, 'base64');
+        return Buffer.from(encodedString, 'base64').toString();
     }
 }

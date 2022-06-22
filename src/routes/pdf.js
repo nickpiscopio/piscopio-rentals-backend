@@ -2,11 +2,11 @@ const express = require('express');
 
 const router = express.Router();
 
-const pdfUtil = require("../util/PdfUtil.js")
-const emailUtil = require("../util/EmailUtil.js")
+const pdfUtil = require("../util/PdfUtil.js");
+const emailUtil = require("../util/EmailUtil.js");
 
-const pdfKey = require("../constants/key.js")
-const path = require("../constants/path.js")
+const pdfKey = require("../constants/Key.js");
+const path = require("../constants/Path.js");
 
 router.post('/set', function(req, res, next) {
   const body = req.body

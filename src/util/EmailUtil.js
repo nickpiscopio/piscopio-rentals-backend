@@ -1,6 +1,6 @@
 const nodemailer = require("nodemailer");
 
-const email = require("../constants/email.js");
+const email = require("../constants/Email.js");
 const encoderUtil = require("./EncoderUtil.js");
 
 module.exports = class EmailUtil {
