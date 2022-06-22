@@ -5,6 +5,7 @@ module.exports = class Key {
     static STREET = "street";
     static AUTHORIZATION_INITIALS = "authorizationInitials";
     static AUTHORIZATION_SIGNATURE = "authorizationSignature";
+    static AUTHORIZATION_DATE = "authorizationDate";
     static PACKET_RETRIEVER = "packetRetriever";
     static HOUSE_CONACT = "houseContact";
     static DURATION_DATE_FROM = "durationDateFrom";

@@ -47,6 +47,7 @@ static augmentData(dataToAugment) {
     augmentedData[pdfKey.PROPERTY_OWNER] = encoderUtil.decode(property.PROPERTY_OWNER);
     augmentedData[pdfKey.AUTHORIZATION_INITIALS] = encoderUtil.decode(property.AUTHORIZATION_INITIALS);
     augmentedData[pdfKey.AUTHORIZATION_SIGNATURE] = encoderUtil.decode(property.AUTHORIZATION_SIGNATURE);
+    augmentedData[pdfKey.AUTHORIZATION_DATE] = this.getCurrentDate();
     augmentedData[pdfKey.LOT_NUMBER] = encoderUtil.decode(property.LOT_NUMBER);
     augmentedData[pdfKey.STREET_NUMBER] = encoderUtil.decode(property.STREET_NUMBER);
     augmentedData[pdfKey.STREET] = encoderUtil.decode(property.STREET);
@@ -57,7 +58,6 @@ static augmentData(dataToAugment) {
     return augmentedData;
   }
   
-  // TODO: Need to either add our real signature as an image or a auto generated one.
   // TODO: Need to write tests.
   static async augmentPDF(pdfToAugmentPath, finalizedPdfPath, data) {
     const readFile = util.promisify(fs.readFile);
@@ -109,5 +109,9 @@ static augmentData(dataToAugment) {
     const fontNames = font.TENANT_LIST;
     const fontIndex = numberUtil.getRandomNumber(fontNames.length);
     return fontNames[fontIndex];
+  }
+
+  static getCurrentDate() {
+    return new Date().toLocaleDateString('en-US');
   }
 }
