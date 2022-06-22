@@ -1,9 +1,10 @@
 const fs = require("fs");
 const util = require("util");
 
-const { PDFDocument } = require('pdf-lib');
-const fontkit = require('@pdf-lib/fontkit');
+const { PDFDocument } = require("pdf-lib");
+const fontkit = require("@pdf-lib/fontkit");
 
+const font = require("../constants/Font.js");
 const pdfKey = require("../constants/Key.js");
 const path = require("../constants/Path.js");
 const property = require("../constants/Property.js");
@@ -44,8 +45,8 @@ static augmentData(dataToAugment) {
     var augmentedData = dataToAugment;
 
     augmentedData[pdfKey.PROPERTY_OWNER] = encoderUtil.decode(property.PROPERTY_OWNER);
-    console.log("encoderUtil.decode(property.PROPERTY_OWNER): ", encoderUtil.decode(property.PROPERTY_OWNER));
-
+    augmentedData[pdfKey.AUTHORIZATION_INITIALS] = encoderUtil.decode(property.AUTHORIZATION_INITIALS);
+    augmentedData[pdfKey.AUTHORIZATION_SIGNATURE] = encoderUtil.decode(property.AUTHORIZATION_SIGNATURE);
     augmentedData[pdfKey.LOT_NUMBER] = encoderUtil.decode(property.LOT_NUMBER);
     augmentedData[pdfKey.STREET_NUMBER] = encoderUtil.decode(property.STREET_NUMBER);
     augmentedData[pdfKey.STREET] = encoderUtil.decode(property.STREET);
@@ -65,22 +66,29 @@ static augmentData(dataToAugment) {
     const file = await readFile(pdfToAugmentPath);
     const pdfDoc = await PDFDocument.load(file);
   
-    // Set the custom fonts.
     const form = pdfDoc.getForm();
   
-    const fontBytes = fs.readFileSync(path.FONTS + "/" + this.getRandomFont());
+    // Set the custom fonts.
+    const fontPath = path.FONTS + "/";
+    const ownerFontBytes = fs.readFileSync(fontPath + font.OWNER);
+    const tenantFontBytes = fs.readFileSync(fontPath + this.getRandomFont());
   
     pdfDoc.registerFontkit(fontkit);
   
-    const font = await pdfDoc.embedFont(fontBytes);
+    const ownerFont = await pdfDoc.embedFont(ownerFontBytes);
+    const tenantFont = await pdfDoc.embedFont(tenantFontBytes);
     
     // Populate the PDF inputs.
     Object.keys(data).forEach((element) => {
       const field = form.getTextField(element);
       field.setText(data[element]);
   
-      if (element == pdfKey.NAME_SIGNATURE && font !== undefined) {
-        field.defaultUpdateAppearances(font);
+      if (element == pdfKey.AUTHORIZATION_INITIALS || element == pdfKey.AUTHORIZATION_SIGNATURE && ownerFont !== undefined) {
+        field.defaultUpdateAppearances(ownerFont);
+      }
+
+      if (element == pdfKey.NAME_SIGNATURE && tenantFont !== undefined) {
+        field.defaultUpdateAppearances(tenantFont);
       }
     });
   
@@ -100,14 +108,7 @@ static augmentData(dataToAugment) {
   }
   
   static getRandomFont() {
-    const fontNames = [
-      "AlexBrush-Regular.ttf",
-      "HaloHandletter.otf",
-      "Marrisa.ttf",
-      "Kristi.ttf",
-      "DawningofaNewDay.ttf"
-    ]
-  
+    const fontNames = font.TENANT_LIST;
     const fontIndex = numberUtil.getRandomNumber(fontNames.length);
     return fontNames[fontIndex];
   }
