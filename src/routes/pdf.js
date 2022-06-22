@@ -18,7 +18,6 @@ router.post('/set', function(req, res, next) {
   const toDate = body[pdfKey.DURATION_DATE_TO]
 
   const pdfAugmented = pdfUtil.augmentPDF(pdfToAugmentPath, finalizedPdfPath, augmentedData);
-
   pdfAugmented.then(() => {
     const pdfEmailed = emailUtil.sendEmailWithAttachment(finalizedPdfName, finalizedPdfPath, fromDate, toDate);
     pdfEmailed.then( (response) => {
